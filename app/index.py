@@ -1,5 +1,6 @@
 from flask import Flask
 from flask import request
+import json
 from api.jalan.search import get_plans
 app = Flask(__name__)
 
@@ -7,8 +8,12 @@ app = Flask(__name__)
 def hello():
     wx = request.args.get("x", "")
     wy = request.args.get("y", "")
+    human = request.args.get("human", False)
     if wx or wy:
-        return get_plans(wx, wy)
+        if human:
+            return str(json.loads(get_plans(wx, wy)))
+        else:
+            return get_plans(wx, wy)
     return "bad request"
 
 if __name__ == "__main__":
