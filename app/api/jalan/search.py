@@ -37,7 +37,23 @@ def get_plans(wx, wy, range=1):
 
     plans = _parse_to_plans(res.text)
 
-    return plans_to_json(plans)
+    objects = plans_to_objects(plans)
+
+    for obj in objects:
+        x = obj["x"]
+        y = obj["y"]
+
+        distance = get_distance(wx, wy, x, y)
+        obj["distance"] = distance["distance"]
+        obj["duration"] = distance["duration"]
+
+    objects.sort(key=lambda o: o["distance"])
+
+    for obj in objects:
+        print(obj["distance"])
+
+    return json.dumps(objects)
+
 
 def _extract_from_plan(plan, obj, s):
     try:
@@ -45,7 +61,7 @@ def _extract_from_plan(plan, obj, s):
     except:
         obj[s] = ""
 
-def plans_to_json(plans):
+def plans_to_objects(plans):
     objects = []
 
     for plan in plans:
@@ -96,4 +112,4 @@ def plans_to_json(plans):
             obj["facilities"].append(facility.text)
         objects.append(obj)
 
-    return json.dumps(objects, indent=4)
+    return objects
