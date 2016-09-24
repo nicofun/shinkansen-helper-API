@@ -2,7 +2,7 @@ import requests
 import json
 from bs4 import BeautifulSoup
 
-from .location import global_to_japan
+from .location import global_to_japan, japan_to_global
 from .config import JALAN_API_KEY as key
 
 url = "http://jws.jalan.net/APIAdvance/StockSearch/V1/"
@@ -28,7 +28,8 @@ def get_plans(wx, wy, range=1):
         "key": key,
         "x": mjx,
         "y": mjy,
-        "range": range
+        "range": range,
+        "count": 100
     }
 
     res = requests.get(url, params=q)
@@ -45,8 +46,6 @@ def _extract_from_plan(plan, obj, s):
 
 def plans_to_json(plans):
     objects = []
-    for plan in plans:
-         print(plan.prettify())
 
     for plan in plans:
         obj = dict()
@@ -87,6 +86,9 @@ def plans_to_json(plans):
         _extract_from_plan(plan, obj, "numberofratings")
         _extract_from_plan(plan, obj, "rating")
 
+        _x = int(obj["x"])
+        _y = int(obj["y"])
+        obj["x"], obj["y"] = japan_to_global(_x, _y)
 
         obj["facilities"] = []
         for facility in plan.find_all("facility"):
