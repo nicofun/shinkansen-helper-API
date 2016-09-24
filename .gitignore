@@ -92,4 +92,4 @@ ENV/
 .idea/
 
 # setting files
-settings.json
+/app/api/settings.json
