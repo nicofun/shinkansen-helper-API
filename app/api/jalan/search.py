@@ -1,5 +1,6 @@
 import requests
 import json
+
 from bs4 import BeautifulSoup
 
 from .location import global_to_japan, japan_to_global
@@ -39,6 +40,8 @@ def get_plans(wx, wy, range=1):
 
     objects = plans_to_objects(plans)
 
+    objects = extract_deplicated_hotels(objects)
+
     for obj in objects:
         x = obj["x"]
         y = obj["y"]
@@ -60,6 +63,23 @@ def _extract_from_plan(plan, obj, s):
         obj[s] = plan.find(s).text
     except:
         obj[s] = ""
+
+
+def extract_deplicated_hotels(objects):
+    indexed = set()
+    ret = list()
+
+    for obj in objects:
+        hotelname = obj["hotelname"]
+        print(hotelname)
+        if hotelname in indexed:
+            pass
+        else:
+            indexed.add(hotelname)
+            ret.append(obj)
+
+    return ret
+
 
 def plans_to_objects(plans):
     objects = []
