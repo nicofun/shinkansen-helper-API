@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 
 from .location import global_to_japan, japan_to_global
 from .config import JALAN_API_KEY as key
+from ..google.geometry import get_distance
 
 url = "http://jws.jalan.net/APIAdvance/StockSearch/V1/"
 
