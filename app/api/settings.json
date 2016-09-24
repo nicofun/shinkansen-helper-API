@@ -1,0 +1,11 @@
+{
+  "google": {
+    "key": "GCP key"
+  },
+  "jalan": {
+    "key": "jalan key"
+  },
+  "docomo": {
+    "key": "docomo key"
+  },
+}
