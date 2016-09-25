@@ -2,6 +2,7 @@ import requests
 import json
 
 from bs4 import BeautifulSoup
+from datetime import datetime
 
 from .location import global_to_japan, japan_to_global
 from .config import JALAN_API_KEY as key
@@ -19,6 +20,44 @@ def _parse_to_plans(text):
 
     return ret
 
+
+def get_hotel_stocks(hotel_id):
+    stock_serach_url = "http://jws.jalan.net/APIAdvance/StockSearch/V1/"
+
+    now = datetime.now()
+
+    stay_date = now.strftime("%Y%m%d")
+
+    q = {
+        "key": key,
+        "h_id": hotel_id,
+        "stay_date": "20161001"
+    }
+
+    req = requests.get(stock_serach_url, params=q)
+
+    soup = BeautifulSoup(req.text, "lxml")
+    if soup.find("numberofresults").text == "0":
+        return None
+
+    if soup.find("stock").text == "":
+        return 11
+    else:
+        return soup.find("stock").text
+
+
+def extract_stockless_hotels(objects):
+    indexed = set()
+    ret = list()
+
+    for obj in objects:
+        id = obj["hotelid"]
+        num = get_hotel_stocks(id)
+        if num:
+            obj["stock"] = num
+            ret.append(obj)
+
+    return ret
 
 def get_plans(wx, wy, range=1):
     wx = float(wx)
@@ -52,8 +91,7 @@ def get_plans(wx, wy, range=1):
 
     objects.sort(key=lambda o: o["distance"])
 
-    for obj in objects:
-        print(obj["distance"])
+    objects = extract_stockless_hotels(objects)
 
     return json.dumps(objects)
 
@@ -71,7 +109,6 @@ def extract_deplicated_hotels(objects):
 
     for obj in objects:
         hotelname = obj["hotelname"]
-        print(hotelname)
         if hotelname in indexed:
             pass
         else:
