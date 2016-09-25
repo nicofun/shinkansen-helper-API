@@ -3,6 +3,8 @@ from flask import request
 import json
 from api.google.geometry import get_distance
 from api.jalan.search import get_plans, get_hotel_stocks
+from api.dia import main
+
 app = Flask(__name__)
 
 @app.route("/api/v1/hotels")
@@ -20,7 +22,7 @@ def hello():
 
 @app.route("/api/v1/dia")
 def dia():
-    return json.dumps({"status": "not implemented"})
+    return main()
 
 
 @app.route("/")
